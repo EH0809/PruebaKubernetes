@@ -1,0 +1,46 @@
+
+@{
+    ViewBag.Title = "Tarjeta";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalles de la Tarjeta de Regalo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detalles de la Tarjeta de Regalo</h1>
+        <p><strong>De:</strong> @Model.De</p>
+        <p><strong>Para:</strong> @Model.Para</p>
+        <p><strong>Monto:</strong> @Model.Monto</p>
+        <p><strong>Mensaje:</strong> @Model.Mensaje</p>
+    </div>
+</body>

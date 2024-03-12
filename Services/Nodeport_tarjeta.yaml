@@ -3,28 +3,33 @@ kind: Deployment # el nombre que sele tiene que colocar, se puede ver con kubect
 metadata:
   annotations: # anotaciones para que en el history nos aparezca 
     kubernetes.io/change-cause: "Creacion de Servicio" #Mensaje descriptivo para que aparezca en el en el historial 
-  name: depback #Nobmre del deployment
+  name: tarjeta #Nobmre del deployment
   labels:
-    app: Tarjeta #Label 
+    app: tarjeta #Label 
 spec: #Replicaset que va tener el deployment
   revisionHistoryLimit: 10 #Este es el liminte de replicase creados por el deployment, por defecto viene 10 
   replicas: 3 
   selector:
     matchLabels: #Nombre que va a buscar en todos los pods
-      app: Tarjeta
+      app: tarjeta
   template:
     metadata:
       labels:
-        app: Tarjeta
+        app: tarjeta
     spec: #Especificacoin del contenedor
       containers:
-      - name: tarejta_regalo
-        image: "Nombre de la imagen"
+      - name: tarjeta
+        image: "eher1506/pruebaconcepto:v5"
+        ports:
+        - containerPort: 32524
+        env:
+        - name: ASPNETCORE_URLS
+          value: http://+:32524
 --- #Inicia el servicio
 apiVersion: v1 #aca el grupo de de kubectl api-resources
 kind: Service # el nombre que sele tiene que colocar, se puede ver con kubectl api-resources  
 metadata:
-  name: my-servicestarjeta #FUNCIONA COMO DNS
+  name: my-sertarjeta #FUNCIONA COMO DNS
   labels:
     app: tarjeta
 spec:
@@ -33,5 +38,5 @@ spec:
     app: tarjeta #app.kubernetes.io/name: backend #Nombre de servicio 
   ports:
     - protocol: TCP
-      port: 3005 # puerto en donde escucha la app 
-      targetPort: 3005 #a que puerto del PODS se va a consumir
+      port: 2500 # puerto en donde escucha la app 
+      targetPort: 32524 #a que puerto del PODS se va a consumir

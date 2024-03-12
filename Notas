@@ -1,0 +1,6 @@
+docker run -p 8080:3005 -it eher1506/pruebaconcepto:v2
+
+
+docker run -d -p 8080:3005 --name prueba eher1506/pruebaconcepto:v2
+
+docker run -p 8080:3005 --name prueba5

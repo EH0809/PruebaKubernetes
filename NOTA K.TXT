@@ -1,0 +1,241 @@
+Kubernetes 
+Instalacion 
+	-Docker 
+		https://minikube.sigs.k8s.io/docs/drivers/docker/
+		
+	-kubectl
+		https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/
+		
+		
+Ejemplo con minikube
+	Instalacion 
+		https://minikube.sigs.k8s.io/docs/start/
+		
+	Comandos 
+		kubectl get po -A ----------> Muestra los Pods creados 
+		minikube start ---> Inicia el cluster
+		minikube stop ----> detiene el cluester
+		
+		
+		
+		
+Contenedores 
+Como funciona un contenedro 
+	-Proceso que se ejecuta de manera aislada bajo un namespace (nombre del contenedor) 
+	
+	IPC - Inter Process Communication 
+		- Conteneder si se puede comunicar en el mismo contenedor, no se puede comunicar entre contenedores 
+	
+	Cgroup (Recueros )
+		Se le puede asignar recuersos al contenedor
+			RAM
+			CPU
+	Namespace
+		Nombre unico del contenedor 
+		Asingacion de IP 
+		
+	Mount (Montar) 
+		montar una imgane o tarea en el contenedor
+		
+	PID 	
+		Identificador de los procesos que se ejecutan dentro del contenedor 
+		
+	User
+		Usuario creados dentro del contenedor 
+	
+	UTS Unix timeshargin systeml 
+		Hostname del contenedor unico 
+	
+
+POD 
+	Cada contenedor es un LXG (Linux container) 
+	
+	Docker simplifica la conexion entre contenedores 
+		red Bridgh -> un puente entre contenedores 
+		
+	POD es un contenedor o mas contenedores que comparten namespaces para estar en la misma red
+
+	No se pueden recuepar solo 
+	Replicas 
+
+ReplicaSet 
+	Crea Pöds y los reconoce por los labels que esten asingados a los pods 
+	Owner references, coloco a en el metadato agregar el nobmre del replicaset para asginarle a ese pod un dueño 
+	Encargado de mantener las replicas de los pods 
+	Si ya existe un pod y tiene los mismos label, este los tomara como propio y no terminara de crearlos con el yaml  -----------------IMPORTATEEEE
+	Este funciona para crear las replicas unicamente, este no actualiza la imagen de cada pod 
+
+Deployment 
+	Este es el padre de los replcaset 
+	Este controla la cuandos Pods este disponible 
+		MaxV -> Permitir el maximo de disponibilidad  
+		MaxS -> Perimite escalara un maximo luego del 100%
+	Busca mantener cierto porcentaje de pods vivos
+	Si se busca actualizar la imagen del contenedor, es mas facil utilizar el deployment
+
+	Va a mantener siempre un limite de 10 replicaset
+
+	Se puede hacer rollback 
+
+Servicios 
+	Observa los pods con ciertos pods segun el label que le demos 
+	
+	Endpoint 
+
+CLUSTER Y TIPOS 
+	cluster IP 
+		es un tipo de cluster que asigna una ip virtual 
+		- solo crea un ip virtual y solo es accesible dentro de la maquina
+		- comunicacion internta 
+	
+	Node port 
+		Expone el servicio fuera del cluster
+		- expone un rango de IPS desde el 30000-32767
+		
+
+
+
+
+
+
+
+		
+Manifiesto 
+
+-----------------------
+primer pod
+	minikube start (IMPORTANTE)
+
+	comandos 
+	kubectl get pods ----------> Muestra si ya tenemos recuersos asingados 
+	kubectl run --generator=run-pod/v1 "Nombre" --"Imagen"
+	kubectl run nginx --image=nginx:alpine ---------------> En win funciona crea el pods 
+                "Nombre" "Imagen del contenedor"
+
+
+	kubectl label pods "Nombre del pod" "el label que se quiere agregar"
+			kubectl label pods podtest1 app=pod-label
+
+    kubectl describe pod podtest ---> comando para ver los logs 
+                         "Nombre el pod"
+
+    kubectl api-resources ---> comando para verificar que puede hacer la api de kubernetes 
+						----> la agrupacion de los replicaset 
+
+    kubectl delete pod nginx ---------------> paara eliminar pods 
+                       "Nombre del Pod"
+
+    kubectl get pods podtest --------------------> Si se le agrega el nombre es especifico 
+                      "Nombre del Pod"
+
+    kubectl get pod podtest -o yaml ---------------> muestra el manifiesto del pod 
+                    "nombre"  "formato"
+
+    kubectl port-forward podtest 7000:61381
+    
+    Docker 
+    docker ps -l --------> contenedor 
+
+	kubectl exec -ti podtest -- sh -> 
+	kubectl exec -ti "nombre del pod" - "Contenedor" -- sh -> para ingresar a los contenedorse dentro del pod 
+		kubectl exec -ti rs-test-69ftv - contenedor2 -- sh
+
+
+	kubectl logs -p "Nomb" -f --> este comando hace que se verifiquen porque no se levantan los pods 
+	kubectl lgos "Nombre del pod" -c "contenedor"
+
+	kubectl api-versions -------> verifica la version de la api 
+
+	kubectl apply -f "Nombre.yaml" ---------> ejecuta el manifiesto creado
+
+	kubectl delete -f "Nombre.yaml" ---------> Elimina el pods 
+
+
+Labesl
+	kubectl get pods -l app=front ----------> -l ---> Labesl
+								  -----------> app= -----> referencia al pods
+
+
+Replicaset 
+	kubectl get rs -> muestra los replicaset creados 
+
+	kubectl describe rs "Nombre del replicaset"
+		kubectl describe rs rs-test
+
+	kubectl get pod "Nombre del pod" -o yaml -> aca se verifica el owner del pod 
+		kubectl get pod rs-test-69ftv -o yaml 
+
+Deployment
+	kubectl apply -f "Nobmre" -> para crealo en comando 
+
+	kubectl get Deployment -> muestro los Deployment ejecutandoce 
+
+	kubectl get deployment --show-labels ------> muestro los label del deployment
+
+	kubectl rollout status deployment dep -------> verifica el estado de ejecucion del deployment
+										"Nombre del deployment"
+
+	kubectl get deployments "Nombre" -o yaml ---> Manifiesto del deployment
+
+	kubectl rollout status "Tipo" "Nombre" --------> estatus en tiempo real de lo que esta haciendo el Deployment o replicaset o pod
+		kubectl rollout status Deployment dep 
+
+	kubectl rollout history deployment "Nombre del deployment" `-----------> para ver el historial 
+		kubectl rollout history Deployment dep 
+
+	kubectl apply -f "nombre".yaml --record -------> guarda el comando que se ejecuta dentro del rollout history 
+		kubectl apply -f tempalte.yaml --record
+
+	kubectl rollout history Deployment "Nombre" --revision="numero" ---> comando para ver el historial de deployment 
+		kubectl rollout history deployment dep --revision=4
+
+	kubectl get deployment.apps --------> otra forma de ver los deployment
+
+	kubectl rollout undo deployment "Nombre del Deployment" --to-revion="Numero a la revision que se quiere regresar" ------------> hacer un rollback a veriones anteriores
+		kubectl rollout undo deployment dev --to-revision=4
+
+Servicio 
+	kubectl apply -f "nombrearjhivo".yaml ----> crear el servicio 
+		kubectl apply -f template.yaml 
+
+	kubectl get svc -l app=front ----> sirve para ver la ip por la que esta el servicio 
+
+	kubectl describe svc "nombre Servicio" ---> para ver los detalles del servicio 
+		kubectl describe svc my-service
+
+	Endpoint
+		kubectl get endpoints ---> sirve para ver los Endpoint
+
+	kubectl get pods -l app="labels" -o wide -> sirve para ver las ip de los pods 
+	kubectl get pods -l app=front -o wide
+
+--Ejercicio 
+Docker con la imagen 
+	docker run --rm -dti -v $PWD/:/go --net host --name golang golang bash ---------> crea el contenedor para el back
+		Este comando expone como tal la carpeta de go 
+
+	docker exec -ti "Nombre contenedor" bash -----------> abre la carpeta que se expuso con el comando anterior
+
+
+	docker rm -fv "Nombre contenedor" -----------------> borar el contenedor
+
+
+	docker run -d -p 8080:80 "nombre del contenedor" 
+
+	docker run -p 8080:3005 -it golang
+
+dockerfil 
+	
+	docker build -t "NombreImagen"" -f Dockerfile . ----> crear una imagen a partir de un dockerfile 
+		docker build -t backend -f Dockerfile .
+
+	docker run -d -p 9091:9090 --name "Nombre del contenedor" "nombre de la imagen"
+		docker run -d -p 9091:9090 --name back backend
+
+
+kuberneste 
+	kubectl get deployments.apps "nombre del deploymet" -o yaml | grep -i Pull  -----> busca dentro del manifiesto todas las opciones que tenga el nombre pull 
+
+
+Ubuntu para acceder al contendeor de ubutn 
+	docker run -ti --rm ubuntu /bin/bash
